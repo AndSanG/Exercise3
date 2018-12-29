@@ -1,0 +1,2 @@
+Investigate whether this extension to addCalls is working correctly and whether this is now sufficient for supporting ranges.
+Open question and need an specific answer about what to expect

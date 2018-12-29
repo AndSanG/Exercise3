@@ -33,7 +33,7 @@ class FormulaCell():
     # so A1 => self.lookup('A1')
     # A1 + B1 => self.lookup('A1') + self.lookup('B1')
     def addCalls(self, input):
-        p = re.compile('[A-Z]+[1-9]+')
+        p = re.compile('[A-Z]+[1-9][0-9]?|100+')
         matches = p.finditer(input)                             #list of matches
         result = []                                             # list of components
         prev = 0
