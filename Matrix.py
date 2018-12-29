@@ -20,7 +20,7 @@ class Matrix(object):
         result = []
         for row in self.data:
             for cell in row:
-                result.append(str(cell))
+                result.append('%5.5s' % str(cell))
                 result.append(" ")
             result.append("\n")
         string = ''.join(result)

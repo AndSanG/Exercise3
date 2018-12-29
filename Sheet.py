@@ -10,8 +10,7 @@ class NumberCell():
         self.value = int(x)
 
     def __str__(self):
-        value = float(self.value)
-        return str(value)
+        return str(self.value)
 
 
 class FormulaCell():
@@ -21,6 +20,12 @@ class FormulaCell():
         self.updateValue()
 
     def updateValue(self):
+
+
+        def average(aList):
+            return sum(aList) / len(aList)
+
+        # Eval the content of cell (without =) and save in the value
         self.value = eval(self.addCalls(self.formula[1:]))
 
 
@@ -29,18 +34,19 @@ class FormulaCell():
     # A1 + B1 => self.lookup('A1') + self.lookup('B1')
     def addCalls(self, input):
         p = re.compile('[A-Z]+[1-9]+')
-        matches = p.finditer(input)
-        result = []
+        matches = p.finditer(input)                             #list of matches
+        result = []                                             # list of components
         prev = 0
         for match in matches:
-            result.append(input[prev:match.start()])
-            result.append('self._sheet.lookup(\'')
-            result.append(input[match.start():match.end()])
-            result.append('\')')
-            prev = match.end()
+            result.append(input[prev:match.start()])            # the symbol before character
+            result.append('self._sheet.lookup(\'')              # self._sheet.lookup('
+            result.append(input[match.start():match.end()])     # cell number e.g. A1
+            result.append('\')')                                # ')
+            prev = match.end()                                  # prev keep track of the position
 
-        result.append(input[prev:])
-        resultString = ''.join(result)
+        result.append(input[prev:])                             # append the content after the last match
+        resultString = ''.join(result)                          # convert the result list into a string
+        print('---->>  '+resultString)
         return resultString
 
     def __str__(self):
@@ -69,7 +75,16 @@ class Sheet(object):
 
     # A => 0
     def colNameToInt(self, name):
-        return ord(name[0]) - 65
+        # invert oder of letters (lowest count first)
+        name = name[::-1]
+        result = 0
+        # loop over all letters
+        for i in range(len(name)):
+            # convert the letter to its value, make 1 the first value
+            num = (ord(name[i]) - 65) + 1
+            # add the number multiplied by its weight
+            result += num * 26 ** i
+        return result - 1
 
     # lookup the value of a given cell.
     # x = A1, B22, AB33 ...
@@ -84,9 +99,6 @@ class Sheet(object):
         col = self.colNameToInt(letters)
         cell = self.matrix.getElementAt(row, col)
         return cell.value
-
-    def from_excel(self,chars):
-        return reduce(lambda r, x: r * 26 + x + 1, map(string.ascii_uppercase.index, chars), 0)
 
     def __str__(self):
         return self.matrix.__str__()
