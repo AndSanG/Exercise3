@@ -1,5 +1,6 @@
 import re
 from Matrix import Matrix
+from Conversions import *
 from functools import reduce
 import string
 from math import *
@@ -12,8 +13,12 @@ class NumberCell():
     def __str__(self):
         return str(self.value)
 
+class Constants():
+    REGEX_CELL = '[A-Z]+[1-9][0-9]?|100+'
+    REGEX_RANGE = '[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*'
 
 class FormulaCell():
+
     def __init__(self, expr, sheet):  # expr is of the shape "=A1+B2" in string
 
         self._sheet = sheet
@@ -32,15 +37,10 @@ class FormulaCell():
 
     value = property(get_value, set_value)
 
-    def input_matcher(self,input):
-        p = re.compile('[A-Z]+[1-9][0-9]?|100+')
-        return p.finditer(input)  # list of matches
-
-
 
     def create_dependencies_tree(self):
         input = self.formula[1:]
-        matches = self.input_matcher(input)
+        matches = self.input_matcher(input,Constants.REGEX_CELL)
 
         for match in matches:
             self.dependencies.append(input[match.start():match.end()])  # cell number e.g. A1
@@ -61,12 +61,33 @@ class FormulaCell():
         #lookup search the value
         self.value = eval(self.addCalls(self.formula[1:]))
 
+    def input_matcher(self,input,regex):
+        p = re.compile(regex)
+        return p.finditer(input)  # list of matches
+
+    def expand_range(self,input):
+
+        matches = self.input_matcher(input,Constants.REGEX_RANGE)  # list of matches
+        result = []  # list of components
+        prev = 0
+        for match in matches:
+            result.append(input[prev:match.start()])
+            result.append('[')
+            cell_range = rangeToListConverter(input[match.start():match.end()])
+            result.append(','.join(cell_range))
+            result.append(']')
+            prev = match.end()
+
+        result.append(input[prev:])
+        resultString = ''.join(result)
+        return resultString
 
     # transforms the formula stored in a cell into python code
     # so A1 => self.lookup('A1')
     # A1 + B1 => self.lookup('A1') + self.lookup('B1')
     def addCalls(self, input):
-        matches = self.input_matcher(input)                     #list of matches
+        input = self.expand_range(input)
+        matches = self.input_matcher(input,Constants.REGEX_CELL)                     #list of matches
         result = []                                             # list of components
         prev = 0
         for match in matches:
