@@ -1,6 +1,6 @@
 from Sheet import Sheet
 
-sheet = Sheet(10,10) #max(x,675)
+sheet = Sheet(10,10) 
 #sheet.modifyValue(0, A, string)
 
 #sheet.modifyValue(0, 0, '')    #B
@@ -9,13 +9,13 @@ sheet.modifyValue(0, 0, '=D1')    #A1
 sheet.modifyValue(1, 0, '=D2')    #A2
 sheet.modifyValue(2, 0, '=D3')    #A3
 sheet.modifyValue(3, 0, '=D4')    #A4
-sheet.modifyValue(4, 0, '=sum([A1,A2,A3,A4])')    #A1
+sheet.modifyValue(4, 0, '=sum(A1:A4)')    #A1
 
 sheet.modifyValue(0, 1, '=D1+C1')    #B1
 sheet.modifyValue(1, 1, '=D2+C2')    #B2
 sheet.modifyValue(2, 1, '=D3+C3')    #B3
 sheet.modifyValue(3, 1, '=D4+C4')    #B4
-sheet.modifyValue(4, 1, '=sum([B1,B2,B3,B4])')    #B5
+sheet.modifyValue(4, 1, '=sum(B1:B4)')    #B5
 
 sheet.modifyValue(0, 2, '1')    #C1
 sheet.modifyValue(1, 2, '2')    #C2

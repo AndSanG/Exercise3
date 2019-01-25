@@ -1,3 +1,4 @@
+from Matrix import *
 def numeral(n):
     return chr(n + 65)
 
@@ -99,3 +100,10 @@ def colNumberToName(number):
         letters += chr(65+(x-1))
 
     return letters
+
+def cell_to_coords(cell):
+    row = int(getNumbers(cell)) - 1
+    col = colNameToInt(getLetters(cell))
+    return (row,col)
+
+
